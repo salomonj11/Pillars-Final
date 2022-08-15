@@ -20,6 +20,18 @@ const User = db.define('user', {
       },
     },
   },
+  isStudent: {
+    type: Sequelize.DataTypes.VIRTUAL,
+    get() {
+      return this.userType === 'STUDENT' ? true : false;
+    },
+  },
+  isTeacher: {
+    type: Sequelize.DataTypes.VIRTUAL,
+    get() {
+      return this.userType === 'TEACHER' ? true : false;
+    },
+  },
 });
 
 User.findUnassignedStudents = function () {
@@ -45,6 +57,33 @@ User.findTeachersAndMentees = function async() {
   return allTeachers;
 };
 
+User.addHook('beforeUpdate', async (user) => {
+  const mentorAndMenteesArray = await User.findTeachersAndMentees();
+
+  if (
+    mentorAndMenteesArray.some(
+      (mentor) => mentor.name === user.name && mentor.mentees.length > 0
+    )
+  ) {
+    throw new Error(
+      `${user.name} has a mentee! They Cannot become a student yet`
+    );
+  } else {
+    const woahMentor = await User.findByPk(user.mentorId);
+    const ourUser = await User.findByPk(user.id);
+
+    if (ourUser.mentorId !== null) {
+      throw new Error(
+        `${user.name} has a mentor! They cannot become a teacher yet`
+      );
+    } else if (woahMentor !== null && woahMentor.userType === 'STUDENT') {
+      throw new Error(
+        `${woahMentor.name} is not a teacher! Cannot make them a mentor.`
+      );
+    }
+    return user;
+  }
+});
 /**
  * We've created the association for you!
  *

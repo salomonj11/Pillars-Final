@@ -29,15 +29,6 @@ router.get('/unassigned', async (req, res, next) => {
   }
 });
 
-// const allTeachers = User.findAll({
-//     where: {
-//       userType: 'TEACHER',
-//     },
-//     include: {
-//       model: User,
-//       as: 'mentees',
-//     },
-
 router.get('/teachers', async (req, res, next) => {
   try {
     const allTeachers = await User.findAll({
@@ -50,6 +41,50 @@ router.get('/teachers', async (req, res, next) => {
       },
     });
     res.send(allTeachers);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    if (req.params.id.search(/[0-9]/) >= 0) {
+      if (await User.findByPk(req.params.id)) {
+        await User.destroy({
+          where: {
+            id: req.params.id,
+          },
+        });
+        res.sendStatus(204);
+      } else res.sendStatus(404);
+    } else res.sendStatus(400);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const newUser = await User.findOne({
+      where: {
+        name: req.body.name,
+      },
+    });
+    newUser === null
+      ? res.status(201).send(await User.create(req.body))
+      : res.sendStatus(409);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put('/:id', async (req, res, next) => {
+  try {
+    const myUser = await User.findByPk(req.params.id);
+
+    myUser != null
+      ? res.status(200).send(await myUser.update(req.body))
+      : res.sendStatus(404);
   } catch (err) {
     next(err);
   }

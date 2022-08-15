@@ -21,7 +21,7 @@ describe('Tier 1: Basic Fields, Class Methods, GET Routes', () => {
 
     describe('Basic Fields: name and userType', () => {
       describe('name', () => {
-        xit('name is a string', async () => {
+        it('name is a string', async () => {
           const hannah = await User.create({ name: 'HANNAH' });
           expect(hannah.name).to.equal(
             'HANNAH',

@@ -79,7 +79,7 @@ describe('Tier 2: Eager Loading, One-To-Many Associations', () => {
     });
   });
 
-  describe.only('Express', () => {
+  describe('Express', () => {
     describe('GET /api/users/teachers', () => {
       it('responds with all teachers', async () => {
         const response = await app.get('/api/users/teachers');
