@@ -32,6 +32,19 @@ User.findUnassignedStudents = function () {
   return lonelyStudents;
 };
 
+User.findTeachersAndMentees = function async() {
+  const allTeachers = User.findAll({
+    where: {
+      userType: 'TEACHER',
+    },
+    include: {
+      model: User,
+      as: 'mentees',
+    },
+  });
+  return allTeachers;
+};
+
 /**
  * We've created the association for you!
  *

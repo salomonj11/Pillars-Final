@@ -22,9 +22,34 @@ router.get('/unassigned', async (req, res, next) => {
   try {
     const lonelyStudents = await User.findUnassignedStudents();
     const myMap = lonelyStudents.map((user) => user.name);
-    console.log(myMap);
 
     res.send(lonelyStudents);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// const allTeachers = User.findAll({
+//     where: {
+//       userType: 'TEACHER',
+//     },
+//     include: {
+//       model: User,
+//       as: 'mentees',
+//     },
+
+router.get('/teachers', async (req, res, next) => {
+  try {
+    const allTeachers = await User.findAll({
+      where: {
+        userType: 'TEACHER',
+      },
+      include: {
+        model: User,
+        as: 'mentees',
+      },
+    });
+    res.send(allTeachers);
   } catch (err) {
     next(err);
   }
