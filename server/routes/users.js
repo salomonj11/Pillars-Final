@@ -18,4 +18,16 @@ const {
 
 // Add your routes here:
 
+router.get('/unassigned', async (req, res, next) => {
+  try {
+    const lonelyStudents = await User.findUnassignedStudents();
+    const myMap = lonelyStudents.map((user) => user.name);
+    console.log(myMap);
+
+    res.send(lonelyStudents);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
